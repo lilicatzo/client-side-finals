@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useUser } from '../context/UserContext'; 
+import { addSearchToHistory } from '../utils/AddSearchHistory';
 
-const MealSearch = ({ switchView }) => {
+const MealSearch = ({ switchView}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedMeal, setSelectedMeal] = useState(null);
+  const { currentUser } = useUser();
+  const userId = currentUser?.uid;
 
   const searchMeal = async () => {
     try {
@@ -20,7 +24,14 @@ const MealSearch = ({ switchView }) => {
     try {
       const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`);
       const data = await response.json();
-      setSelectedMeal(data.meals[0]);
+      const selectedMealData = data.meals[0];
+
+      setSelectedMeal(selectedMealData);
+
+      if (selectedMealData && userId) {
+        await addSearchToHistory(userId, selectedMealData.strMeal);
+        console.log('Search history updated successfully');
+      }
     } catch (error) {
       console.error('Error fetching recipe:', error);
     }

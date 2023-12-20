@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { auth } from '../config/FirebaseConfig';
+import { auth, firebase } from '../config/FirebaseConfig';
+import { createInitialSearchHistory } from '../utils/CreateInitialSearchHistory';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -9,18 +10,23 @@ const SignUp = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-
+  
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-
+  
     try {
-      await auth.createUserWithEmailAndPassword(email, password);
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      console.log('User created:', userCredential.user.uid);
+  
+      // init search history
+      await createInitialSearchHistory(userCredential.user.uid);
     } catch (signUpError) {
       setError(signUpError.message);
     }
   };
+  
 
   return (
     <div>

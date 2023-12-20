@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { UserProvider } from './context/UserContext';
 import MealSearch from './components/MealSearch';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import { auth } from './config/FirebaseConfig';
+import DisplayHistory from './components/DisplayHistory';
 
 
 
@@ -53,17 +55,20 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>Meal Search Platform</h1>
-      {user ? (
-        <>
-          {renderProfile()}
-          <MealSearch switchView={switchView} />
-        </>
-      ) : (
-        renderView()
-      )}
-    </div>
+    <UserProvider>
+      <div className="App">
+        <h1>Meal Search Platform</h1>
+        {user ? (
+          <>
+            {renderProfile()}
+            <MealSearch switchView={switchView} />
+            <DisplayHistory /> 
+          </>
+        ) : (
+          renderView()
+        )}
+      </div>
+    </UserProvider>
   );
 }
 
