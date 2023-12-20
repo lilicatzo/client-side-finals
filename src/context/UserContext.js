@@ -15,7 +15,7 @@ export const UserProvider = ({ children }) => {
       setCurrentUser(user);
     });
 
-    return unsubscribe; // unsubscribe on unmount
+    return unsubscribe; 
   }, [auth]);
 
   return (
