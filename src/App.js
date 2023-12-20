@@ -7,10 +7,24 @@ import { auth } from './config/FirebaseConfig';
 import DisplayHistory from './components/DisplayHistory';
 
 
-
 function App() {
   const [user, setUser] = useState(null);
   const [view, setView] = useState('signIn');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedMeal, setSelectedMeal] = useState(null)
+
+  const searchMeal = async (externalSearchTerm) => {
+    const termToSearch = externalSearchTerm || searchTerm;
+    try {
+      const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${termToSearch}`);
+      const data = await response.json();
+      setSearchResults(data.meals || []);
+      setSelectedMeal(null);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   const switchView = (newView) => {
     setView(newView);
@@ -57,12 +71,20 @@ function App() {
   return (
     <UserProvider>
       <div className="App">
-        <h1>Meal Search Platform</h1>
+        {/* ... */}
         {user ? (
           <>
             {renderProfile()}
-            <MealSearch switchView={switchView} />
-            <DisplayHistory /> 
+            <MealSearch 
+              switchView={switchView} 
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              searchResults={searchResults}
+              selectedMeal={selectedMeal}
+              setSelectedMeal={setSelectedMeal}
+              searchMeal={searchMeal}
+            />
+            <DisplayHistory searchMeal={searchMeal} />
           </>
         ) : (
           renderView()

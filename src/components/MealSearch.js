@@ -2,19 +2,26 @@ import React, { useState } from 'react';
 import { useUser } from '../context/UserContext'; 
 import { addSearchToHistory } from '../utils/AddSearchHistory';
 
-const MealSearch = ({ switchView}) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectedMeal, setSelectedMeal] = useState(null);
+const MealSearch = ({
+  switchView,
+  searchTerm,
+  setSearchTerm,
+  searchResults,
+  selectedMeal,
+  setSelectedMeal,
+  searchMeal, // This is passed from App.js
+}) => {
+  const [localSearchResults, setLocalSearchResults] = useState([]);
+  const [localSelectedMeal, setLocalSelectedMeal] = useState(null);
   const { currentUser } = useUser();
   const userId = currentUser?.uid;
 
-  const searchMeal = async () => {
+  const handleSearch = async () => {
     try {
       const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchTerm}`);
       const data = await response.json();
-      setSearchResults(data.meals || []);
-      setSelectedMeal(null);
+      setLocalSearchResults(data.meals || []);
+      setLocalSelectedMeal(null);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -26,7 +33,7 @@ const MealSearch = ({ switchView}) => {
       const data = await response.json();
       const selectedMealData = data.meals[0];
 
-      setSelectedMeal(selectedMealData);
+      setLocalSelectedMeal(selectedMealData);
 
       if (selectedMealData && userId) {
         await addSearchToHistory(userId, selectedMealData.strMeal);
@@ -36,6 +43,19 @@ const MealSearch = ({ switchView}) => {
       console.error('Error fetching recipe:', error);
     }
   };
+
+
+  // const searchMeal = async () => {
+  //   try {
+  //     const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchTerm}`);
+  //     const data = await response.json();
+  //     setSearchResults(data.meals || []);
+  //     setSelectedMeal(null);
+  //   } catch (error) {
+  //     console.error('Error fetching data:', error);
+  //   }
+  // };
+
 
   return (
     <div>

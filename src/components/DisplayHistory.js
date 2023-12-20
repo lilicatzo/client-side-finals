@@ -3,7 +3,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useUser } from '../context/UserContext';
 import { firestore } from '../config/FirebaseConfig';
 
-const HistoryComponent = () => {
+const HistoryComponent = ({ searchMeal }) => {
   const { currentUser } = useUser();
   const [historyData, setHistoryData] = useState([]);
 
@@ -16,9 +16,7 @@ const HistoryComponent = () => {
 
           const snapshot = await getDocs(q);
           if (!snapshot.empty) {
-            // Get the history array from the first document
             const historyArray = snapshot.docs[0].data().history;
-
             setHistoryData(historyArray);
           } else {
             console.log('No history found for this user');
@@ -37,7 +35,9 @@ const HistoryComponent = () => {
       <h2>Search History</h2>
       <ul>
         {historyData.map((searchTerm, index) => (
-          <li key={index}>{searchTerm}</li>
+          <li key={index} onClick={() => searchMeal(searchTerm)}>
+            {searchTerm}
+          </li>
         ))}
       </ul>
     </div>
