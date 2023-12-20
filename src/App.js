@@ -19,13 +19,26 @@ function App() {
     try {
       const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${termToSearch}`);
       const data = await response.json();
-      setSearchResults(data.meals || []);
-      setSelectedMeal(null);
+      const meal = data.meals ? data.meals[0] : null;
+  
+      if (meal) {
+        const mealDetailsResponse = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${meal.idMeal}`);
+        const mealDetailsData = await mealDetailsResponse.json();
+        const fullMealDetails = mealDetailsData.meals ? mealDetailsData.meals[0] : null;
+  
+        if (fullMealDetails) {
+          setSelectedMeal(fullMealDetails);
+        } else {
+          console.log("No details found for this meal");
+        }
+      } else {
+        console.log("No meal found for this search term");
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
-
+  
   const switchView = (newView) => {
     setView(newView);
   };
