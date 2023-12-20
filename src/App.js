@@ -1,25 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import MealSearch from './components/MealSearch';
 
 function App() {
+  const [view, setView] = useState('search');
+
+  const switchView = (newView) => {
+    setView(newView);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {view === 'search' && <MealSearch switchView={switchView} />}
     </div>
   );
 }
 
 export default App;
+
+
+
