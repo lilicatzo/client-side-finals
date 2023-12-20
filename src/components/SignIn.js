@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { auth } from '../config/FirebaseConfig';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const SignIn = ({ switchToSignUp }) => {
   const [email, setEmail] = useState('');
@@ -10,12 +11,11 @@ const SignIn = ({ switchToSignUp }) => {
     e.preventDefault();
 
     try {
-      await auth.signInWithEmailAndPassword(email, password);
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (signInError) {
       setError(signInError.message);
     }
   };
-
   return (
     <div>
       <h2>Sign In</h2>

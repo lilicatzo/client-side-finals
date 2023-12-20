@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { auth } from '../config/FirebaseConfig';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { createInitialSearchHistory } from '../utils/CreateInitialSearchHistory';
+import { auth } from '../config/FirebaseConfig';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -17,7 +18,7 @@ const SignUp = () => {
     }
   
     try {
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log('User created:', userCredential.user.uid);
   
       // init search history
