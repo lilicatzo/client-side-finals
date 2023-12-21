@@ -5,6 +5,9 @@ import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import { auth } from './config/FirebaseConfig';
 import DisplayHistory from './components/DisplayHistory';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import NavigationBar from './NavigationBar'; 
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -13,45 +16,19 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedMeal, setSelectedMeal] = useState(null);
 
-  // const searchMeal = async (externalSearchTerm) => {
-  //   const termToSearch = externalSearchTerm || searchTerm;
-  //   try {
-  //     const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${termToSearch}`);
-  //     const data = await response.json();
-  //     const meal = data.meals ? data.meals[0] : null;
-  
-  //     if (meal) {
-  //       const mealDetailsResponse = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${meal.idMeal}`);
-  //       const mealDetailsData = await mealDetailsResponse.json();
-  //       const fullMealDetails = mealDetailsData.meals ? mealDetailsData.meals[0] : null;
-  
-  //       if (fullMealDetails) {
-  //         setSelectedMeal(fullMealDetails);
-  //       } else {
-  //         console.log("No details found for this meal");
-  //       }
-  //     } else {
-  //       console.log("No meal found for this search term");
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching data:', error);
-  //   }
-  // };
-
   const searchMeal = async (externalSearchTerm) => {
     console.log("External search term:", externalSearchTerm);
     console.log("Component's search term state:", searchTerm);
     const termToSearch = externalSearchTerm || searchTerm;
-    console.log("Term to search:", termToSearch); // Adding this to debug
+    console.log("Term to search:", termToSearch); 
+    setSelectedMeal(null);
   
     try {
-      // Step 1: Search for the meal by name to get its ID
       const searchResponse = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${termToSearch}`);
       const searchData = await searchResponse.json();
       const meal = searchData.meals ? searchData.meals[0] : null;
   
       if (meal) {
-        // Step 2: Use the meal ID to fetch the full meal details
         const detailsResponse = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${meal.idMeal}`);
         console.log(`Fetching details from: https://www.themealdb.com/api/json/v1/1/lookup.php?i=${meal.idMeal}`);
 
@@ -91,20 +68,14 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  const handleLogout = () => {
-    auth.signOut().then(() => {
-      setUser(null);
-    });
-  };
-
   const renderProfile = () => {
     return (
       <div>
-        <p>Welcome, {user.email}</p>
-        <button onClick={handleLogout}>Log Out</button>
+        <p></p>
       </div>
     );
   };
+  
 
   const renderView = () => {
     switch (view) {
@@ -119,46 +90,82 @@ function App() {
 
   return (
     <UserProvider>
-      <div className="App">
+      <NavigationBar />
+      <div className="container-fluid">
         {user ? (
-          <>
-            {renderProfile()}
-            <MealSearch 
-              switchView={switchView} 
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              searchResults={searchResults}
-              selectedMeal={selectedMeal}
-              setSelectedMeal={setSelectedMeal}
-              searchMeal={searchMeal}
-            />
-            {selectedMeal && (
-              <div>
-                <h2>{selectedMeal.strMeal}</h2>
-                <img src={selectedMeal.strMealThumb} alt={selectedMeal.strMeal} />
-                <h3>Ingredients:</h3>
-                <ul>
-                  {Array.from({ length: 20 }, (_, i) => i + 1)
-                    .filter((i) => selectedMeal[`strIngredient${i}`])
-                    .map((i) => (
-                      <li key={i}>
-                        {selectedMeal[`strMeasure${i}`]} {selectedMeal[`strIngredient${i}`]}
-                      </li>
-                    ))}
-                </ul>
-                <h3>Instructions:</h3>
-                <p>{selectedMeal.strInstructions}</p>
-                <button onClick={() => setSelectedMeal(null)}>Back to Search</button>
+          <div className="row vh-100" style={{ marginTop: '100px' }}>
+            <div className="col-md-3 d-flex flex-column ">
+              <DisplayHistory searchMeal={searchMeal} />
+            </div>
+            <div className="col-md-9">
+              <div className="row">
+                <div className="col-md-12">{renderProfile()}</div>
               </div>
-            )}
-            <DisplayHistory searchMeal={searchMeal} />
-          </>
+              <div className="row">
+                <div className="col-md-12">
+                  <MealSearch
+                    switchView={switchView}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    searchResults={searchResults}
+                    selectedMeal={selectedMeal}
+                    setSelectedMeal={setSelectedMeal}
+                    searchMeal={searchMeal}
+                  />
+                </div>
+              </div>
+              {selectedMeal && (
+                <div className="row">
+                  <div className="col-md-12">
+                    <h1>{selectedMeal.strMeal}</h1>
+                    <div className="col-md-6">
+                      <img
+                        src={selectedMeal.strMealThumb}
+                        alt={selectedMeal.strMeal}
+                        className="img-fluid"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <h3>Ingredients:</h3>
+                      <ul>
+                        {Array.from({ length: 20 }, (_, i) => i + 1)
+                          .filter((i) => selectedMeal[`strIngredient${i}`])
+                          .map((i) => (
+                            <li key={i}>
+                              {selectedMeal[`strMeasure${i}`]}{' '}
+                              {selectedMeal[`strIngredient${i}`]}
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
+                    <div className="col-md-12">
+                      <h3>Instructions:</h3>
+                      <p>{selectedMeal.strInstructions}</p>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => setSelectedMeal(null)}
+                      >
+                        Back to Search
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {/* <div className="row">
+                <div className="col-md-12">
+                  <DisplayHistory searchMeal={searchMeal} />
+                </div>
+              </div> */}
+            </div>
+          </div>
         ) : (
-          renderView()
+          <div className="row">
+            <div className="col-md-12">{renderView()}</div>
+          </div>
         )}
       </div>
     </UserProvider>
   );
-        };  
+}
+
 export default App;
-  
