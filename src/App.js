@@ -136,8 +136,19 @@ function App() {
               <div>
                 <h2>{selectedMeal.strMeal}</h2>
                 <img src={selectedMeal.strMealThumb} alt={selectedMeal.strMeal} />
+                <h3>Ingredients:</h3>
+                <ul>
+                  {Array.from({ length: 20 }, (_, i) => i + 1)
+                    .filter((i) => selectedMeal[`strIngredient${i}`])
+                    .map((i) => (
+                      <li key={i}>
+                        {selectedMeal[`strMeasure${i}`]} {selectedMeal[`strIngredient${i}`]}
+                      </li>
+                    ))}
+                </ul>
+                <h3>Instructions:</h3>
                 <p>{selectedMeal.strInstructions}</p>
-                {/* Render other details as needed */}
+                <button onClick={() => setSelectedMeal(null)}>Back to Search</button>
               </div>
             )}
             <DisplayHistory searchMeal={searchMeal} />
@@ -148,9 +159,6 @@ function App() {
       </div>
     </UserProvider>
   );
-  
         };  
-
 export default App;
-  
   

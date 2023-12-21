@@ -81,8 +81,6 @@ const MealSearch = ({
           </ul>
           <h3>Instructions:</h3>
           <p>{localSelectedMeal.strInstructions}</p>
-          <h3>Full Recipe:</h3>
-          <p>{localSelectedMeal.strInstructions}</p>
           <button onClick={() => setLocalSelectedMeal(null)}>Back to Search</button>
         </div>
       ) : (
